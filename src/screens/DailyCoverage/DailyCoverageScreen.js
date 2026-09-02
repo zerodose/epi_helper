@@ -36,15 +36,18 @@ function DailyCoverageScreen({ navigation }) {
   });
 
   const vaccineFields = [
-    { label: 'BCG', field: 'bcg' },
-    { label: 'Hep', field: 'hep' },
-    { label: 'Penta 1', field: 'penta1' },
-    { label: 'Penta 2', field: 'penta2' },
-    { label: 'Penta 3', field: 'penta3' },
-    { label: 'Measles 1', field: 'measles1' },
-    { label: 'Measles 2', field: 'measles2' },
-    { label: 'TD', field: 'td' },
-    { label: 'HPV', field: 'hpv' },
+    { label: 'BCG', field: 'bcg', dosesPerVial: 20 },
+    { label: 'Hep-B', field: 'hepB', dosesPerVial: 1 },
+    { label: 'Penta', field: 'penta', dosesPerVial: 10 },
+    { label: 'PCV-10', field: 'pcv10', dosesPerVial: 4 },
+    { label: 'Rota', field: 'rota', dosesPerVial: 1 },
+    { label: 'MR', field: 'mr', dosesPerVial: 10 },
+    { label: 'TCV', field: 'tcv', dosesPerVial: 5 },
+    { label: 'OPV', field: 'opv', dosesPerVial: 20 },
+    { label: 'IPV', field: 'ipv', dosesPerVial: 10 },
+    { label: 'TD', field: 'td', dosesPerVial: 20 },
+    { label: 'HPV', field: 'hpv', dosesPerVial: 1 },
+    { label: 'Panadol', field: 'panadol', dosesPerVial: 1 },
   ];
 
   const handleChange = (field, value) => {
@@ -86,6 +89,9 @@ function DailyCoverageScreen({ navigation }) {
   const handleCancel = () => {
     navigation.goBack();
   };
+  const confirmationVaccines = vaccineFields.filter(
+    item => Number(coverage[item.field] || 0) > 0,
+  );
 
   return (
     <View style={styles.container}>
@@ -117,6 +123,10 @@ function DailyCoverageScreen({ navigation }) {
           </Text>
 
           <View style={styles.formCard}>
+            <View style={styles.tableHeaderRow}>
+              <Text style={styles.tableHeaderText}>Vaccine</Text>
+              <Text style={styles.tableHeaderText}>Doses/Vial</Text>
+            </View>
             {vaccineFields.map((item, index) => (
               <View
                 key={item.field}
@@ -220,19 +230,19 @@ function DailyCoverageScreen({ navigation }) {
 
             {/* Values */}
             <View style={styles.confirmationCard}>
-              {vaccineFields.map((item, index) => (
+              {confirmationVaccines.map((item, index) => (
                 <View
                   key={item.field}
                   style={[
                     styles.confirmationRow,
-                    index === vaccineFields.length - 1 &&
+                    index === confirmationVaccines.length - 1 &&
                       styles.lastConfirmationRow,
                   ]}
                 >
                   <Text style={styles.confirmationLabel}>{item.label}</Text>
 
                   <Text style={styles.confirmationValue}>
-                    {coverage[item.field] || '0'}
+                    {coverage[item.field]}
                   </Text>
                 </View>
               ))}
@@ -397,21 +407,21 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
 
-focusedInput: {
-  backgroundColor: colors.background,
-  borderColor: colors.textMuted,
-  borderWidth: 1.5,
+  focusedInput: {
+    backgroundColor: colors.background,
+    borderColor: colors.textMuted,
+    borderWidth: 1.5,
 
-  shadowColor: colors.black,
-  shadowOffset: {
-    width: 0,
-    height: 0,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+
+    elevation: 1,
   },
-  shadowOpacity: 0.08,
-  shadowRadius: 3,
-
-  elevation: 1,
-},
 
   buttonRow: {
     flexDirection: 'row',
@@ -611,6 +621,28 @@ focusedInput: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 18,
+  },
+  tableHeaderRow: {
+    minHeight: 42,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: spacing.md,
+
+    backgroundColor: colors.surface,
+
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+
+  tableHeaderText: {
+    width: 100,
+    textAlign: 'center',
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: colors.textSecondary,
   },
 });
 

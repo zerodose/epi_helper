@@ -1,9 +1,14 @@
+
 // import React from 'react';
 // import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import { Lucide } from '@react-native-vector-icons/lucide/static';
-// import {  Pressable, StyleSheet, View } from 'react-native';
+// import { Pressable, StyleSheet, View } from 'react-native';
+
 // import AppHeader from '@/components/common/AppHeader';
-// import HomeScreen from '@/screens/Home/HomeScreen';
+
+// import UserHomeScreen from '@/screens/Home/UserHomeScreen';
+// import AdminHomeScreen from '@/screens/Home/AdminHomeScreen';
+
 // import MonthlyReportScreen from '@/screens/MonthlyReport/MonthlyReportScreen';
 // import WastageReportScreen from '@/screens/WastageReport/WastageReportScreen';
 
@@ -35,7 +40,10 @@
 //   );
 // }
 
-// function MainTabs() {
+// function MainTabs({ route }) {
+//   const role = route?.params?.role || 'user';
+
+//   const DashboardScreen = role === 'admin' ? AdminHomeScreen : UserHomeScreen;
 
 //   return (
 //     <Tab.Navigator
@@ -81,7 +89,7 @@
 //       >
 //         {props => (
 //           <TabScreen navigation={props.navigation}>
-//             <HomeScreen {...props} />
+//             <DashboardScreen {...props} />
 //           </TabScreen>
 //         )}
 //       </Tab.Screen>
@@ -159,7 +167,7 @@
 //   },
 
 //   tabBarIcon: {
-//     marginTop: spacing.xs,
+//     // marginTop: spacing.xs,
 //     marginBottom: 0,
 //   },
 
@@ -215,17 +223,25 @@ function TabScreen({ children, navigation }) {
         <AppHeader navigation={navigation} />
       </View>
 
-      <View style={styles.content}>{children}</View>
+      <View style={styles.content}>
+        {children}
+      </View>
     </View>
   );
 }
 
 function TabIcon({ name, focused, color }) {
   return (
-    <View style={[styles.iconContainer, focused && styles.activeIconContainer]}>
+    <View
+      style={[
+        styles.iconContainer,
+        focused && styles.activeIconContainer,
+      ]}
+    >
       <Lucide
         name={name}
-        size={23}
+        size={22}
+        strokeWidth={focused ? 2.4 : 2}
         color={focused ? colors.textOnPrimary : color}
       />
     </View>
@@ -235,7 +251,8 @@ function TabIcon({ name, focused, color }) {
 function MainTabs({ route }) {
   const role = route?.params?.role || 'user';
 
-  const DashboardScreen = role === 'admin' ? AdminHomeScreen : UserHomeScreen;
+  const DashboardScreen =
+    role === 'admin' ? AdminHomeScreen : UserHomeScreen;
 
   return (
     <Tab.Navigator
@@ -247,25 +264,23 @@ function MainTabs({ route }) {
 
         tabBarLabelPosition: 'below-icon',
 
-        tabBarStyle: [
-          styles.tabBar,
-          {
-            paddingTop: 10,
-            height: 80,
-            paddingBottom: spacing.xs,
-          },
-        ],
+        tabBarStyle: styles.tabBar,
 
         tabBarLabelStyle: styles.tabBarLabel,
+
         tabBarIconStyle: styles.tabBarIcon,
 
         tabBarButton: props => (
           <Pressable
             {...props}
             android_ripple={{
-              color: colors.border,
-              radius: 24,
+              color: colors.primaryLight,
+              borderless: true,
             }}
+            style={({ pressed }) => [
+              styles.tabButton,
+              pressed && styles.tabButtonPressed,
+            ]}
           />
         ),
       }}
@@ -274,8 +289,13 @@ function MainTabs({ route }) {
         name="Dashboard"
         options={{
           title: 'Dashboard',
+
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="layout-dashboard" focused={focused} color={color} />
+            <TabIcon
+              name="layout-dashboard"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       >
@@ -290,8 +310,13 @@ function MainTabs({ route }) {
         name="MonthlyReport"
         options={{
           title: 'Monthly Report',
+
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="file-text" focused={focused} color={color} />
+            <TabIcon
+              name="file-text"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       >
@@ -306,8 +331,13 @@ function MainTabs({ route }) {
         name="WastageReport"
         options={{
           title: 'Wastage Report',
+
           tabBarIcon: ({ focused, color }) => (
-            <TabIcon name="trash-2" focused={focused} color={color} />
+            <TabIcon
+              name="trash-2"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       >
@@ -340,37 +370,60 @@ const styles = StyleSheet.create({
   },
 
   tabBar: {
-    height: 80,
+    height: 76,
 
     backgroundColor: colors.background,
 
     borderTopWidth: 1,
     borderTopColor: colors.border,
 
-    elevation: 8,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.sm,
 
+    elevation: 10,
+
+    shadowColor: colors.black,
     shadowOpacity: 0.08,
-    shadowRadius: 6,
+    shadowRadius: 8,
 
     shadowOffset: {
       width: 0,
-      height: -2,
+      height: -3,
     },
   },
 
+  tabButton: {
+    flex: 1,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    marginHorizontal: spacing.xs,
+    borderRadius: 12,
+  },
+
+  tabButtonPressed: {
+    opacity: 0.85,
+  },
+
   tabBarIcon: {
-    marginTop: spacing.xs,
+    height: 38,
+
+    marginTop: 0,
     marginBottom: 0,
   },
 
   tabBarLabel: {
     ...typography.tabLabel,
-    marginTop: 10,
-    marginBottom: spacing.xs,
+
+    marginTop: 2,
+    marginBottom: 0,
+
+    textAlign: 'center',
   },
 
   iconContainer: {
-    width: 38,
+    width: 40,
     height: 34,
 
     alignItems: 'center',
@@ -381,11 +434,22 @@ const styles = StyleSheet.create({
 
   activeIconContainer: {
     width: 42,
-    height: 38,
+    height: 34,
 
-    borderRadius: 11,
+    borderRadius: 10,
 
     backgroundColor: colors.primaryDark,
+
+    shadowColor: colors.primaryDark,
+    shadowOpacity: 0.18,
+    shadowRadius: 5,
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 3,
   },
 });
 
