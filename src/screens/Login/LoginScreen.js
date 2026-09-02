@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 import KeyboardScreen from '@/components/common/KeyboardScreen';
 import TextInputField from '@/components/common/TextInputField';
 import PrimaryButton from '@/components/common/PrimaryButton';
@@ -10,11 +11,13 @@ const DEMO_CREDENTIALS = {
   user: {
     mobileNumber: '03001234567',
     password: 'User@123',
+    role: 'user',
   },
 
   admin: {
     mobileNumber: '03007654321',
     password: 'Admin@123',
+    role: 'admin',
   },
 };
 
@@ -60,8 +63,35 @@ function LoginScreen({ navigation }) {
       return;
     }
 
-    // Real login/API logic yahan add karenge.
-    navigation.replace('MainTabs');
+    let role = null;
+
+    if (
+      mobileNumber.trim() === DEMO_CREDENTIALS.user.mobileNumber &&
+      password === DEMO_CREDENTIALS.user.password
+    ) {
+      role = DEMO_CREDENTIALS.user.role;
+    }
+
+    if (
+      mobileNumber.trim() === DEMO_CREDENTIALS.admin.mobileNumber &&
+      password === DEMO_CREDENTIALS.admin.password
+    ) {
+      role = DEMO_CREDENTIALS.admin.role;
+    }
+
+    // Demo login credentials check
+    if (!role) {
+      setErrors({
+        mobileNumber: 'Invalid mobile number or password.',
+        password: '',
+      });
+
+      return;
+    }
+
+    navigation.replace('UserMain', {
+      role,
+    });
   };
 
   const handleMobileChange = value => {
@@ -82,6 +112,13 @@ function LoginScreen({ navigation }) {
       setErrors(previous => ({
         ...previous,
         password: '',
+      }));
+    }
+
+    if (errors.mobileNumber) {
+      setErrors(previous => ({
+        ...previous,
+        mobileNumber: '',
       }));
     }
   };
@@ -196,15 +233,6 @@ function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  keyboardView: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-
-  scrollContent: {
-    flexGrow: 1,
-  },
-
   container: {
     flex: 1,
     alignItems: 'center',

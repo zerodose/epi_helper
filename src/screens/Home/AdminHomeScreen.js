@@ -1,20 +1,14 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacing, typography } from '@/theme';
 
-function HomeScreen() {
+function AdminHomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
+      <Text style={styles.title}>Admin Dashboard</Text>
 
-      <Text style={styles.subtitle}>
-        Welcome to EPI Helper
-      </Text>
+      <Text style={styles.subtitle}>Welcome to the Admin Dashboard</Text>
     </View>
   );
 }
@@ -22,14 +16,14 @@ function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
+    backgroundColor: colors.surface,
   },
 
   title: {
-    fontSize: typography.size.display,
+    fontSize: typography.size.xxxl,
     fontWeight: typography.weight.bold,
     color: colors.primaryDark,
   },
@@ -41,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default AdminHomeScreen;
