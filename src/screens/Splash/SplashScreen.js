@@ -5,6 +5,8 @@ import {
   View,
 } from 'react-native';
 
+import { colors, spacing, typography } from '@/theme';
+
 function SplashScreen({ navigation }) {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,14 +29,19 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.background,
   },
+
   title: {
-    fontSize: 32,
-    fontWeight: '700',
+    fontSize: typography.size.display,
+    fontWeight: typography.weight.bold,
+    color: colors.primaryDark,
   },
+
   subtitle: {
-    marginTop: 8,
-    fontSize: 16,
+    marginTop: spacing.sm,
+    fontSize: typography.size.lg,
+    color: colors.textSecondary,
   },
 });
 

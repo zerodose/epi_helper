@@ -1,20 +1,14 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacing, typography } from '@/theme';
 
-function HomeScreen() {
+function MonthlyReportScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
+      <Text style={styles.title}>Monthly Report</Text>
 
-      <Text style={styles.subtitle}>
-        Welcome to EPI Helper
-      </Text>
+      <Text style={styles.subtitle}>Monthly report will appear here.</Text>
     </View>
   );
 }
@@ -29,7 +23,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: typography.size.display,
+    fontSize: typography.size.xxl,
     fontWeight: typography.weight.bold,
     color: colors.primaryDark,
   },
@@ -41,4 +35,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default MonthlyReportScreen;
