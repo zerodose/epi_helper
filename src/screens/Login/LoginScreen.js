@@ -11,7 +11,7 @@ import { loginUser } from '@/services/authApi';
 
 const DEMO_CREDENTIALS = {
   user: {
-    mobileNumber: '03452246469',
+    mobileNumber: '03122255770',
     password: '12345678',
     role: 'user',
   },
