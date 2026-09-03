@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Lucide } from '@react-native-vector-icons/lucide/static';
 
 import AuthHeader from '@/components/common/AuthHeader';
@@ -30,7 +31,10 @@ function DailyCoverageScreen({ navigation }) {
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const inputRefs = useRef({});
   const [focusedField, setFocusedField] = useState(null);
-  const currentDate = new Date().toLocaleDateString('en-GB', {
+  const [coverageDate, setCoverageDate] = useState(new Date());
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  const formattedCoverageDate = coverageDate.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
@@ -81,6 +85,10 @@ function DailyCoverageScreen({ navigation }) {
   };
 
   const handleSave = () => {
+    if (!hasAnyCoverage) {
+      return;
+    }
+
     setConfirmationVisible(true);
   };
 
@@ -89,7 +97,7 @@ function DailyCoverageScreen({ navigation }) {
 
     // API submit yahan add karenge.
     console.log('Daily Coverage Saved:', {
-      coverageDate: currentDate,
+      coverageDate: coverageDate.toISOString(),
       coverage,
     });
     navigation.goBack();
@@ -102,6 +110,11 @@ function DailyCoverageScreen({ navigation }) {
   const handleCancel = () => {
     navigation.goBack();
   };
+
+  const hasAnyCoverage = vaccineFields.some(item => {
+    return Number(coverage[item.field] || 0) > 0;
+  });
+
   const confirmationVaccines = vaccineFields.filter(
     item => Number(coverage[item.field] || 0) > 0,
   );
@@ -123,8 +136,16 @@ function DailyCoverageScreen({ navigation }) {
           <View style={styles.dateContent}>
             <Text style={styles.dateLabel}>Coverage Date</Text>
 
-            <Text style={styles.dateValue}>{currentDate}</Text>
+            <Text style={styles.dateValue}>{formattedCoverageDate}</Text>
           </View>
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.datePickerButton}
+            onPress={() => setDatePickerVisible(true)}
+          >
+            <Lucide name="calendar" size={20} color={colors.primaryDark} />
+          </TouchableOpacity>
         </View>
 
         {/* Vaccine Coverage */}
@@ -189,8 +210,12 @@ function DailyCoverageScreen({ navigation }) {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.saveButton}
+            style={[
+              styles.saveButton,
+              !hasAnyCoverage && styles.saveButtonDisabled,
+            ]}
             onPress={handleSave}
+            disabled={!hasAnyCoverage}
           >
             <Lucide name="save" size={18} color={colors.textOnPrimary} />
 
@@ -198,6 +223,22 @@ function DailyCoverageScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </KeyboardScreen>
+
+      {datePickerVisible && (
+        <DateTimePicker
+          value={coverageDate}
+          mode="date"
+          display="default"
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            setDatePickerVisible(false);
+
+            if (selectedDate) {
+              setCoverageDate(selectedDate);
+            }
+          }}
+        />
+      )}
 
       {/* Confirmation Modal */}
       <Modal
@@ -238,7 +279,7 @@ function DailyCoverageScreen({ navigation }) {
             <View style={styles.modalDateRow}>
               <Text style={styles.modalDateLabel}>Coverage Date</Text>
 
-              <Text style={styles.modalDateValue}>{currentDate}</Text>
+              <Text style={styles.modalDateValue}>{formattedCoverageDate}</Text>
             </View>
 
             {/* Values */}
@@ -320,7 +361,7 @@ const styles = StyleSheet.create({
     borderRadius: spacing.cardRadius,
   },
 
-  dateIcon: {
+  datePickerButton: {
     width: 42,
     height: 42,
 
@@ -333,7 +374,19 @@ const styles = StyleSheet.create({
   },
 
   dateContent: {
+    flex: 1,
     marginLeft: spacing.md,
+  },
+  dateIcon: {
+    width: 42,
+    height: 42,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    backgroundColor: colors.primaryLight,
+
+    borderRadius: 10,
   },
 
   dateLabel: {
@@ -681,12 +734,14 @@ const styles = StyleSheet.create({
 
   confirmationTableHeaderText: {
     width: 100,
-
     textAlign: 'center',
-
     fontSize: typography.size.sm,
     fontWeight: typography.weight.bold,
     color: colors.textSecondary,
+  },
+ saveButtonDisabled: {
+    backgroundColor: colors.primaryDark,
+    opacity: 0.8,
   },
 });
 
