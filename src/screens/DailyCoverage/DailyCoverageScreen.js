@@ -230,12 +230,17 @@ function DailyCoverageScreen({ navigation }) {
           mode="date"
           display="default"
           maximumDate={new Date()}
-          onChange={(event, selectedDate) => {
-            setDatePickerVisible(false);
-
+          accentColor={colors.primaryDark}
+          themeVariant="light"
+          onValueChange={(event, selectedDate) => {
             if (selectedDate) {
               setCoverageDate(selectedDate);
             }
+
+            setDatePickerVisible(false);
+          }}
+          onDismiss={() => {
+            setDatePickerVisible(false);
           }}
         />
       )}
@@ -739,7 +744,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.bold,
     color: colors.textSecondary,
   },
- saveButtonDisabled: {
+  saveButtonDisabled: {
     backgroundColor: colors.primaryDark,
     opacity: 0.8,
   },
