@@ -7,7 +7,7 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, typography } from '@/theme';
 import Loader from '@/components/common/Loader';
-import { loginUser } from '@/services/authApi';
+import { loginUser } from '@/api/authApi';
 
 const DEMO_CREDENTIALS = {
   user: {
@@ -380,9 +380,9 @@ const styles = StyleSheet.create({
     height: 100,
   },
   buttonDisabled: {
-  backgroundColor: colors.primaryDark,
-  opacity: 0.8,
-},
+    backgroundColor: colors.primaryDark,
+    opacity: 0.8,
+  },
 });
 
 export default LoginScreen;

@@ -362,8 +362,8 @@
 
 // export default SignupScreen;
 
-import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import KeyboardScreen from '@/components/common/KeyboardScreen';
 import TextInputField from '@/components/common/TextInputField';
@@ -371,15 +371,11 @@ import PrimaryButton from '@/components/common/PrimaryButton';
 import EmailVerificationModal from '@/components/common/EmailVerificationModal';
 import AuthHeader from '@/components/common/AuthHeader';
 
-import {colors, spacing, typography} from '@/theme';
+import { colors, spacing, typography } from '@/theme';
 
-import {
-  signupUser,
-  verifyEmail,
-  resendVerificationCode,
-} from '@/services/authApi';
+import { signupUser, verifyEmail, resendVerificationCode } from '@/api/authApi';
 
-function SignupScreen({navigation}) {
+function SignupScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
@@ -477,8 +473,7 @@ function SignupScreen({navigation}) {
       } else {
         setErrors(previous => ({
           ...previous,
-          general:
-            response?.message || 'Unable to create account.',
+          general: response?.message || 'Unable to create account.',
         }));
       }
     } catch (error) {
@@ -512,9 +507,7 @@ function SignupScreen({navigation}) {
 
         navigation.goBack();
       } else {
-        setVerificationError(
-          response?.message || 'Email verification failed.',
-        );
+        setVerificationError(response?.message || 'Email verification failed.');
       }
     } catch (error) {
       console.log('Verify Email Error:', error);
@@ -547,8 +540,7 @@ function SignupScreen({navigation}) {
       console.log('Resend Code Error:', error);
 
       const message =
-        error?.response?.data?.message ||
-        'Unable to resend verification code.';
+        error?.response?.data?.message || 'Unable to resend verification code.';
 
       setVerificationError(message);
     } finally {
@@ -628,10 +620,7 @@ function SignupScreen({navigation}) {
 
   return (
     <>
-      <AuthHeader
-        title="Create Account"
-        onBack={() => navigation.goBack()}
-      />
+      <AuthHeader title="Create Account" onBack={() => navigation.goBack()} />
 
       <KeyboardScreen>
         <View style={styles.container}>
@@ -644,9 +633,7 @@ function SignupScreen({navigation}) {
           <View style={styles.formContainer}>
             <Text style={styles.title}>Create Account</Text>
 
-            <Text style={styles.subtitle}>
-              Create your EPI Helper account
-            </Text>
+            <Text style={styles.subtitle}>Create your EPI Helper account</Text>
 
             <View style={styles.form}>
               <TextInputField
@@ -684,9 +671,7 @@ function SignupScreen({navigation}) {
               />
 
               {errors.mobileNumber ? (
-                <Text style={styles.errorText}>
-                  {errors.mobileNumber}
-                </Text>
+                <Text style={styles.errorText}>{errors.mobileNumber}</Text>
               ) : null}
 
               <TextInputField
@@ -710,36 +695,29 @@ function SignupScreen({navigation}) {
               />
 
               {errors.confirmPassword ? (
-                <Text style={styles.errorText}>
-                  {errors.confirmPassword}
-                </Text>
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
               ) : null}
 
               {errors.general ? (
-                <Text style={styles.generalErrorText}>
-                  {errors.general}
-                </Text>
+                <Text style={styles.generalErrorText}>{errors.general}</Text>
               ) : null}
 
               <PrimaryButton
                 title={loading ? 'Creating Account...' : 'Create Account'}
                 onPress={handleSignup}
                 disabled={
-                  loading ||
-                  password.length < 8 ||
-                  confirmPassword.length < 8
+                  loading || password.length < 8 || confirmPassword.length < 8
                 }
               />
 
               <View style={styles.loginRow}>
-                <Text style={styles.loginLabel}>
-                  Already have an account?
-                </Text>
+                <Text style={styles.loginLabel}>Already have an account?</Text>
 
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => navigation.goBack()}
-                  disabled={loading}>
+                  disabled={loading}
+                >
                   <Text style={styles.loginLink}>Sign In</Text>
                 </TouchableOpacity>
               </View>
