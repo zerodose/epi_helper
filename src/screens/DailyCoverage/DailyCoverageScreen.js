@@ -26,6 +26,7 @@ function DailyCoverageScreen({ navigation }) {
     td: '',
     hpv: '',
   });
+
   const [confirmationVisible, setConfirmationVisible] = useState(false);
   const inputRefs = useRef({});
   const [focusedField, setFocusedField] = useState(null);
@@ -35,19 +36,31 @@ function DailyCoverageScreen({ navigation }) {
     year: 'numeric',
   });
 
+  // const vaccineFields = [
+  //   { label: 'BCG', field: 'bcg', dosesPerVial: 20 },
+  //   { label: 'Hep-B', field: 'hepB', dosesPerVial: 1 },
+  //   { label: 'Penta', field: 'penta', dosesPerVial: 10 },
+  //   { label: 'PCV-10', field: 'pcv10', dosesPerVial: 4 },
+  //   { label: 'Rota', field: 'rota', dosesPerVial: 1 },
+  //   { label: 'MR', field: 'mr', dosesPerVial: 10 },
+  //   { label: 'TCV', field: 'tcv', dosesPerVial: 5 },
+  //   { label: 'OPV', field: 'opv', dosesPerVial: 20 },
+  //   { label: 'IPV', field: 'ipv', dosesPerVial: 10 },
+  //   { label: 'TD', field: 'td', dosesPerVial: 20 },
+  //   { label: 'HPV', field: 'hpv', dosesPerVial: 1 },
+  //   { label: 'Panadol', field: 'panadol', dosesPerVial: 1 },
+  // ];
+
   const vaccineFields = [
-    { label: 'BCG', field: 'bcg', dosesPerVial: 20 },
-    { label: 'Hep-B', field: 'hepB', dosesPerVial: 1 },
-    { label: 'Penta', field: 'penta', dosesPerVial: 10 },
-    { label: 'PCV-10', field: 'pcv10', dosesPerVial: 4 },
-    { label: 'Rota', field: 'rota', dosesPerVial: 1 },
-    { label: 'MR', field: 'mr', dosesPerVial: 10 },
-    { label: 'TCV', field: 'tcv', dosesPerVial: 5 },
-    { label: 'OPV', field: 'opv', dosesPerVial: 20 },
-    { label: 'IPV', field: 'ipv', dosesPerVial: 10 },
-    { label: 'TD', field: 'td', dosesPerVial: 20 },
-    { label: 'HPV', field: 'hpv', dosesPerVial: 1 },
-    { label: 'Panadol', field: 'panadol', dosesPerVial: 1 },
+    { label: 'BCG', field: 'bcg' },
+    { label: 'Hep-B', field: 'hepB' },
+    { label: 'Penta 1', field: 'penta1' },
+    { label: 'Penta 2', field: 'penta2' },
+    { label: 'Penta 3', field: 'penta3' },
+    { label: 'Measles 1', field: 'measles1' },
+    { label: 'Measles 2', field: 'measles2' },
+    { label: 'TD', field: 'td' },
+    { label: 'HPV', field: 'hpv' },
   ];
 
   const handleChange = (field, value) => {
@@ -230,6 +243,13 @@ function DailyCoverageScreen({ navigation }) {
 
             {/* Values */}
             <View style={styles.confirmationCard}>
+              <View style={styles.confirmationTableHeaderRow}>
+                <Text style={styles.confirmationTableHeaderText}>Vaccine</Text>
+                <Text style={styles.confirmationTableHeaderText}>
+                  Doses/Vial
+                </Text>
+              </View>
+
               {confirmationVaccines.map((item, index) => (
                 <View
                   key={item.field}
@@ -640,6 +660,30 @@ const styles = StyleSheet.create({
   tableHeaderText: {
     width: 100,
     textAlign: 'center',
+    fontSize: typography.size.sm,
+    fontWeight: typography.weight.bold,
+    color: colors.textSecondary,
+  },
+  confirmationTableHeaderRow: {
+    minHeight: 42,
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    paddingHorizontal: spacing.md,
+
+    backgroundColor: colors.surface,
+
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+
+  confirmationTableHeaderText: {
+    width: 100,
+
+    textAlign: 'center',
+
     fontSize: typography.size.sm,
     fontWeight: typography.weight.bold,
     color: colors.textSecondary,
