@@ -45,6 +45,7 @@ import MainTabs from '@/navigation/MainTabs';
 import DailyCoverageScreen from '@/screens/DailyCoverage/DailyCoverageScreen';
 import IndentScreen from '@/screens/Indent/IndentScreen';
 import DiscardVaccineScreen from '@/screens/DiscardVaccine/DiscardVaccineScreen';
+import MonthlyIndentListScreen from '@/screens/Indent/MonthlyIndentListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,10 @@ function AppNavigator() {
           name="Indent"
           component={IndentScreen}
         />
+        <Stack.Screen
+  name="MonthlyIndentList"
+  component={MonthlyIndentListScreen}
+/>
 
         <Stack.Screen
           name="DiscardVaccine"

@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import {
   Modal,
@@ -16,10 +15,20 @@ import KeyboardScreen from '@/components/common/KeyboardScreen';
 
 import { colors, spacing, typography } from '@/theme';
 import { createMonthlyIndent } from '@/api/monthlyIndentApi';
+import Loader from '@/components/common/Loader';
+import ResultModal from '@/components/common/ResultModal';
 
 function IndentScreen({ navigation }) {
   const [receivingType, setReceivingType] = useState('routine');
-
+  const [loading, setLoading] = useState(false);
+  const [validationMessage, setValidationMessage] = useState('');
+  const [validationFields, setValidationFields] = useState([]);
+  const [resultModal, setResultModal] = useState({
+    visible: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
   const [indent, setIndent] = useState({
     bcg: {
       dosesPerVial: '20',
@@ -186,6 +195,10 @@ function IndentScreen({ navigation }) {
   const handleDosesPerVialChange = (field, value) => {
     const numericValue = value.replace(/\D/g, '');
 
+    if (numericValue) {
+      setValidationFields(previous => previous.filter(item => item !== field));
+    }
+
     setIndent(previous => {
       const current = previous[field];
 
@@ -317,59 +330,117 @@ function IndentScreen({ navigation }) {
     inputRefs.current[`${nextVaccine.field}-vials`]?.focus();
   };
 
+  const hasAnyDoses = vaccineFields.some(item => {
+    const vaccine = indent[item.field];
+
+    return Number(vaccine.doses || 0) > 0;
+  });
+
   const handleSave = () => {
+    // Check if at least one vaccine has doses
+    const hasAnyDoses = vaccineFields.some(item => {
+      const vaccine = indent[item.field];
+
+      return Number(vaccine.doses || 0) > 0;
+    });
+
+    if (!hasAnyDoses) {
+      setValidationMessage(
+        'Kam az kam kisi aik vaccine ke liye Doses enter karein.\n\nExample: Agar BCG receive hui hai to BCG ke Doses mein value enter karein.',
+      );
+
+      return;
+    }
+
+    // Check vaccines where vials/doses are entered but doses per vial is missing
+    const invalidVaccines = vaccineFields.filter(item => {
+      const vaccine = indent[item.field];
+
+      const dosesPerVial = Number(vaccine.dosesPerVial || 0);
+      const vials = Number(vaccine.vials || 0);
+      const doses = Number(vaccine.doses || 0);
+
+      return (vials > 0 || doses > 0) && dosesPerVial <= 0;
+    });
+
+    if (invalidVaccines.length > 0) {
+      setValidationFields(invalidVaccines.map(item => item.field));
+
+      const vaccineNames = invalidVaccines.map(item => item.label).join(', ');
+
+      setValidationMessage(
+        `${vaccineNames} ke liye Doses per vial enter karein.\n\nExample: Agar 1 vial mein 5 doses hain, to Doses per vial mein 5 enter karein.`,
+      );
+
+      return;
+    }
+
+    setValidationFields([]);
     setConfirmationVisible(true);
   };
 
-const handleConfirmSave = async () => {
-  try {
-    const vaccineData = vaccineFields.map(item => {
-      const data = indent[item.field];
+  const handleConfirmSave = async () => {
+    try {
+      setLoading(true);
 
-      return {
-        vaccine: item.label,
-        dosesPerVial: Number(data.dosesPerVial || 0),
-        vials: Number(data.vials || 0),
-        doses: Number(data.doses || 0),
+      const vaccineData = vaccineFields.map(item => {
+        const data = indent[item.field];
 
-        /*
-         * Only these five vaccines receive
-         * Routine / Campaign classification.
-         */
-        category: routineCampaignVaccines.includes(item.field)
-          ? receivingType
-          : null,
+        return {
+          vaccine: item.label,
+          dosesPerVial: Number(data.dosesPerVial || 0),
+          vials: Number(data.vials || 0),
+          doses: Number(data.doses || 0),
+          category: routineCampaignVaccines.includes(item.field)
+            ? receivingType
+            : null,
+        };
+      });
+
+      const dataToSave = {
+        indentDate: new Date().toISOString(),
+        receivingType,
+        vaccines: vaccineData,
       };
-    });
 
-    const dataToSave = {
-      indentDate: new Date().toISOString(),
-      receivingType,
-      vaccines: vaccineData,
-    };
+      await createMonthlyIndent(dataToSave);
 
-    console.log(
-      'Sending Monthly Indent:',
-      JSON.stringify(dataToSave, null, 2),
-    );
+      setConfirmationVisible(false);
 
-    const response = await createMonthlyIndent(dataToSave);
+      // Loader ko 2 seconds visible rakhein
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-    console.log(
-      'Monthly Indent Saved:',
-      JSON.stringify(response, null, 2),
-    );
+      setLoading(false);
 
-    setConfirmationVisible(false);
+      // Loader hide hone ke baad Result Modal
+      setResultModal({
+        visible: true,
+        type: 'success',
+        title: 'Indent Saved',
+        message: 'Monthly indent has been saved successfully.',
+      });
+    } catch (error) {
+      console.log('CREATE MONTHLY INDENT ERROR:', error);
+      console.log('ERROR MESSAGE:', error.message);
+      console.log('ERROR RESPONSE:', error.response?.data);
+      console.log('ERROR STATUS:', error.response?.status);
 
-    navigation.goBack();
-  } catch (error) {
-    console.error(
-      'Create Monthly Indent Error:',
-      error.response?.data || error.message,
-    );
-  }
-};
+      // Error ke case mein bhi loader 2 sec show rahe
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      setLoading(false);
+
+      setResultModal({
+        visible: true,
+        type: 'error',
+        title: 'Save Failed',
+        message:
+          error.response?.data?.message ||
+          error.message ||
+          'Something went wrong while saving the monthly indent.',
+      });
+    }
+  };
 
   const handleCancelConfirmation = () => {
     setConfirmationVisible(false);
@@ -570,6 +641,8 @@ const handleConfirmSave = async () => {
                         disabled && styles.disabledInput,
                         focusedField === `${item.field}-dosesPerVial` &&
                           styles.focusedInput,
+                        validationFields.includes(item.field) &&
+                          styles.validationInput,
                       ]}
                       placeholder="-"
                       placeholderTextColor={colors.inputPlaceholder}
@@ -651,8 +724,12 @@ const handleConfirmSave = async () => {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.saveButton}
+            style={[
+              styles.saveButton,
+              !hasAnyDoses && styles.saveButtonDisabled,
+            ]}
             onPress={handleSave}
+            disabled={!hasAnyDoses}
           >
             <Lucide name="save" size={18} color={colors.textOnPrimary} />
 
@@ -728,7 +805,9 @@ const handleConfirmSave = async () => {
                   </View>
 
                   <View style={styles.confirmationSmallColumn}>
-                    <Text style={styles.confirmationHeaderText}>Doses per vial</Text>
+                    <Text style={styles.confirmationHeaderText}>
+                      Doses per vial
+                    </Text>
                   </View>
 
                   <View style={styles.confirmationSmallColumn}>
@@ -800,6 +879,56 @@ const handleConfirmSave = async () => {
           </View>
         </View>
       </Modal>
+      <Modal
+        visible={!!validationMessage}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setValidationMessage('')}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.validationCard}>
+            <View style={styles.validationIcon}>
+              <Lucide
+                name="circle-alert"
+                size={26}
+                color={colors.primaryDark}
+              />
+            </View>
+
+            <Text style={styles.validationTitle}>Doses per vial required</Text>
+
+            <Text style={styles.validationMessage}>{validationMessage}</Text>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.validationButton}
+              onPress={() => {
+                setValidationMessage('');
+              }}
+            >
+              <Text style={styles.validationButtonText}>OK, I’ll enter it</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Loader visible={loading} message="Saving indent..." />
+      <ResultModal
+        visible={resultModal.visible}
+        type={resultModal.type}
+        title={resultModal.title}
+        message={resultModal.message}
+        buttonText={resultModal.type === 'success' ? 'Done' : 'OK'}
+        onPress={() => {
+          setResultModal(previous => ({
+            ...previous,
+            visible: false,
+          }));
+
+          if (resultModal.type === 'success') {
+            navigation.goBack();
+          }
+        }}
+      />
     </View>
   );
 }
@@ -1371,6 +1500,82 @@ const styles = StyleSheet.create({
     fontSize: typography.size.md,
     fontWeight: typography.weight.semibold,
     color: colors.textOnPrimary,
+  },
+  validationCard: {
+    width: '100%',
+    maxWidth: 360,
+
+    padding: spacing.xl,
+
+    backgroundColor: colors.background,
+
+    borderRadius: spacing.cardRadius,
+
+    alignItems: 'center',
+  },
+
+  validationIcon: {
+    width: 52,
+    height: 52,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    backgroundColor: colors.primaryLight,
+
+    borderRadius: 26,
+  },
+
+  validationTitle: {
+    marginTop: spacing.lg,
+
+    fontSize: typography.size.lg,
+    fontWeight: typography.weight.bold,
+
+    color: colors.text,
+
+    textAlign: 'center',
+  },
+
+  validationMessage: {
+    marginTop: spacing.md,
+
+    fontSize: typography.size.md,
+    lineHeight: 22,
+
+    color: colors.textSecondary,
+
+    textAlign: 'center',
+  },
+
+  validationButton: {
+    width: '100%',
+    height: spacing.buttonHeight,
+
+    marginTop: spacing.xl,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    backgroundColor: colors.primaryDark,
+
+    borderRadius: spacing.buttonRadius,
+  },
+
+  validationButtonText: {
+    fontSize: typography.size.md,
+    fontWeight: typography.weight.semibold,
+
+    color: colors.textOnPrimary,
+  },
+  validationInput: {
+    borderColor: '#ef4444',
+    borderWidth: 2,
+    backgroundColor: '#fff7f7',
+  },
+  saveButtonDisabled: {
+    backgroundColor: colors.primaryDark,
+    opacity: 0.8,
   },
 });
 

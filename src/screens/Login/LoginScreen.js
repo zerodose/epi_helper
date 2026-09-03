@@ -235,10 +235,11 @@ function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.xxxl,
+    paddingVertical: spacing.xl,
     backgroundColor: colors.background,
   },
 

@@ -13,6 +13,10 @@ function UserHomeScreen({ navigation }) {
     navigation.navigate('Indent');
   };
 
+  const handleViewIndents = () => {
+    navigation.navigate('MonthlyIndentList');
+  };
+
   const handleDiscardVaccine = () => {
     navigation.navigate('DiscardVaccine');
   };
@@ -67,6 +71,34 @@ function UserHomeScreen({ navigation }) {
 
               <Text style={styles.actionSubtitle}>
                 Create a new vaccine indent
+              </Text>
+            </View>
+
+            <Lucide
+              name="chevron-right"
+              size={20}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.actionButton}
+            onPress={handleViewIndents}
+          >
+            <View style={styles.iconContainer}>
+              <Lucide
+                name="clipboard-list"
+                size={24}
+                color={colors.primaryDark}
+              />
+            </View>
+
+            <View style={styles.textContainer}>
+              <Text style={styles.actionTitle}>View Indents</Text>
+
+              <Text style={styles.actionSubtitle}>
+                View all submitted vaccine indents
               </Text>
             </View>
 

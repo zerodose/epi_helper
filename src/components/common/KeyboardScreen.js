@@ -102,6 +102,7 @@ function KeyboardScreen({
 const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
+    
     backgroundColor: colors.background,
   },
 
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
 
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
 
   content: {
