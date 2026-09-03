@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import KeyboardScreen from '@/components/common/KeyboardScreen';
 
 import TextInputField from '@/components/common/TextInputField';
@@ -177,6 +177,11 @@ function SignupScreen({ navigation }) {
       <AuthHeader title="Create Account" onBack={() => navigation.goBack()} />
       <KeyboardScreen>
         <View style={styles.container}>
+          <Image
+            source={require('@/assets/images/ehelper-icon-512.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <View style={styles.formContainer}>
             <Text style={styles.title}>Create Account</Text>
 
@@ -295,7 +300,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.xxxl,
+    paddingVertical: spacing.md,
     backgroundColor: colors.background,
   },
 
@@ -348,6 +353,10 @@ const styles = StyleSheet.create({
     fontSize: typography.size.md,
     fontWeight: typography.weight.semibold,
     color: colors.primaryDark,
+  },
+  logo: {
+    width: 100,
+    height: 100,
   },
 });
 

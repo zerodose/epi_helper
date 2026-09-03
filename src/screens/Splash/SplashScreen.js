@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import {
+  Image,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
-import { colors, spacing, typography } from '@/theme';
+import { colors } from '@/theme';
 
 function SplashScreen({ navigation }) {
   useEffect(() => {
@@ -18,8 +18,11 @@ function SplashScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>EPI Helper</Text>
-      <Text style={styles.subtitle}>Welcome</Text>
+      <Image
+        source={require('@/assets/images/ehelper-icon-512.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -32,16 +35,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
 
-  title: {
-    fontSize: typography.size.display,
-    fontWeight: typography.weight.bold,
-    color: colors.primaryDark,
-  },
-
-  subtitle: {
-    marginTop: spacing.sm,
-    fontSize: typography.size.lg,
-    color: colors.textSecondary,
+  logo: {
+    width: 180,
+    height: 180,
   },
 });
 
