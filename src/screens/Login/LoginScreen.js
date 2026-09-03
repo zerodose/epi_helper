@@ -4,13 +4,15 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import KeyboardScreen from '@/components/common/KeyboardScreen';
 import TextInputField from '@/components/common/TextInputField';
 import PrimaryButton from '@/components/common/PrimaryButton';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, typography } from '@/theme';
+import Loader from '@/components/common/Loader';
+import { loginUser } from '@/services/authApi';
 
 const DEMO_CREDENTIALS = {
   user: {
-    mobileNumber: '03001234567',
-    password: 'User@123',
+    mobileNumber: '03452246469',
+    password: '12345678',
     role: 'user',
   },
 
@@ -24,7 +26,7 @@ const DEMO_CREDENTIALS = {
 function LoginScreen({ navigation }) {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     mobileNumber: '',
     password: '',
@@ -56,42 +58,57 @@ function LoginScreen({ navigation }) {
     return !newErrors.mobileNumber && !newErrors.password;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const isValid = validateForm();
 
     if (!isValid) {
       return;
     }
 
-    let role = null;
+    setLoading(true);
 
-    if (
-      mobileNumber.trim() === DEMO_CREDENTIALS.user.mobileNumber &&
-      password === DEMO_CREDENTIALS.user.password
-    ) {
-      role = DEMO_CREDENTIALS.user.role;
-    }
-
-    if (
-      mobileNumber.trim() === DEMO_CREDENTIALS.admin.mobileNumber &&
-      password === DEMO_CREDENTIALS.admin.password
-    ) {
-      role = DEMO_CREDENTIALS.admin.role;
-    }
-
-    // Demo login credentials check
-    if (!role) {
+    try {
       setErrors({
-        mobileNumber: 'Invalid mobile number or password.',
+        mobileNumber: '',
         password: '',
       });
 
-      return;
-    }
+      const response = await loginUser({
+        mobileNumber: mobileNumber.trim(),
+        password,
+      });
 
-    navigation.replace('UserMain', {
-      role,
-    });
+      if (!response?.success) {
+        setErrors({
+          mobileNumber: response?.message || 'Login failed.',
+          password: '',
+        });
+
+        return;
+      }
+
+      const { token, user } = response.data;
+
+      await AsyncStorage.setItem('authToken', token);
+
+      await AsyncStorage.setItem('authUser', JSON.stringify(user));
+
+      navigation.replace('UserMain', {
+        role: user.role,
+      });
+    } catch (error) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Unable to login. Please try again.';
+
+      setErrors({
+        mobileNumber: message,
+        password: '',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleMobileChange = value => {
@@ -141,12 +158,13 @@ function LoginScreen({ navigation }) {
 
   return (
     <KeyboardScreen>
+      <Loader visible={loading} message="Logging in..." />
       <View style={styles.container}>
-         <Image
-        source={require('@/assets/images/ehelper-icon-512.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+        <Image
+          source={require('@/assets/images/ehelper-icon-512.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <View style={styles.formContainer}>
           <Text style={styles.title}>Sign In</Text>
 
@@ -191,7 +209,9 @@ function LoginScreen({ navigation }) {
             <PrimaryButton
               title="Sign In"
               onPress={handleLogin}
-              disabled={password.length < 8 || mobileNumber.length < 11}
+              disabled={
+                loading || password.length < 8 || mobileNumber.length < 11
+              }
             />
 
             <View style={styles.signupRow}>
@@ -355,10 +375,14 @@ const styles = StyleSheet.create({
     fontWeight: typography.weight.semibold,
     color: colors.primaryDark,
   },
-    logo: {
+  logo: {
     width: 100,
     height: 100,
   },
+  buttonDisabled: {
+  backgroundColor: colors.primaryDark,
+  opacity: 0.8,
+},
 });
 
 export default LoginScreen;

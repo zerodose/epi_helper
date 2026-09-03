@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Lucide } from '@react-native-vector-icons/lucide/static';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, spacing, typography } from '@/theme';
+import ResultModal from './ResultModal';
 
 function AppHeader({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [resultModal, setResultModal] = useState({
+    visible: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
 
   const handleProfile = () => {
     setMenuVisible(false);
@@ -19,83 +26,121 @@ function AppHeader({ navigation }) {
     // Change Password screen baad mein add karenge
   };
 
-  const handleLogout = () => {
-    setMenuVisible(false);
+const handleLogout = async () => {
+  setMenuVisible(false);
 
-    navigation.replace('Login');
-  };
+  try {
+    await AsyncStorage.removeItem('authToken');
+    await AsyncStorage.removeItem('authUser');
+
+    setResultModal({
+      visible: true,
+      type: 'success',
+      title: 'Logout Successful',
+      message: 'You have been logged out successfully.',
+    });
+  } catch (error) {
+    console.error('Logout Error:', error);
+
+    setResultModal({
+      visible: true,
+      type: 'error',
+      title: 'Logout Failed',
+      message:
+        error?.message ||
+        'Unable to logout. Please try again.',
+    });
+  }
+};
 
   return (
-      <View style={styles.header}>
-        {/* LEFT */}
-        <View style={styles.leftSection}>
-          <Image
-            source={require('@/assets/images/ehelper-icon-512.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+    <View style={styles.header}>
+      {/* LEFT */}
+      <View style={styles.leftSection}>
+        <Image
+          source={require('@/assets/images/ehelper-icon-512.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-          <View>
-            <Text style={styles.title}>EPI Helper</Text>
-            <Text style={styles.subtitle}>Immunization Assistant</Text>
-          </View>
-        </View>
-
-        {/* RIGHT MENU */}
-        <View style={styles.menuWrapper}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.menuButton}
-            onPress={() => setMenuVisible(!menuVisible)}
-          >
-            <Lucide
-              name="ellipsis-vertical"
-              size={22}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          {menuVisible && (
-            <View style={styles.menu}>
-              <TouchableOpacity
-                style={styles.menuItem}
-                activeOpacity={0.7}
-                onPress={handleProfile}
-              >
-                <Lucide name="user" size={19} color={colors.textSecondary} />
-
-                <Text style={styles.menuText}>Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.menuItem}
-                activeOpacity={0.7}
-                onPress={handleChangePassword}
-              >
-                <Lucide
-                  name="lock-keyhole"
-                  size={19}
-                  color={colors.textSecondary}
-                />
-
-                <Text style={styles.menuText}>Change Password</Text>
-              </TouchableOpacity>
-
-              <View style={styles.menuDivider} />
-
-              <TouchableOpacity
-                style={styles.menuItem}
-                activeOpacity={0.7}
-                onPress={handleLogout}
-              >
-                <Lucide name="log-out" size={19} color={colors.danger} />
-
-                <Text style={styles.logoutText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+        <View>
+          <Text style={styles.title}>EPI Helper</Text>
+          <Text style={styles.subtitle}>Immunization Assistant</Text>
         </View>
       </View>
+
+      {/* RIGHT MENU */}
+      <View style={styles.menuWrapper}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.menuButton}
+          onPress={() => setMenuVisible(!menuVisible)}
+        >
+          <Lucide
+            name="ellipsis-vertical"
+            size={22}
+            color={colors.textSecondary}
+          />
+        </TouchableOpacity>
+
+        {menuVisible && (
+          <View style={styles.menu}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              activeOpacity={0.7}
+              onPress={handleProfile}
+            >
+              <Lucide name="user" size={19} color={colors.textSecondary} />
+
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              activeOpacity={0.7}
+              onPress={handleChangePassword}
+            >
+              <Lucide
+                name="lock-keyhole"
+                size={19}
+                color={colors.textSecondary}
+              />
+
+              <Text style={styles.menuText}>Change Password</Text>
+            </TouchableOpacity>
+
+            <View style={styles.menuDivider} />
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              activeOpacity={0.7}
+              onPress={handleLogout}
+            >
+              <Lucide name="log-out" size={19} color={colors.danger} />
+
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+      <ResultModal
+        visible={resultModal.visible}
+        type={resultModal.type}
+        title={resultModal.title}
+        message={resultModal.message}
+        buttonText="OK"
+        onPress={() => {
+          setResultModal(prev => ({
+            ...prev,
+            visible: false,
+          }));
+
+          if (resultModal.type === 'success') {
+            navigation.replace('Login');
+          }
+        }}
+      />
+    </View>
   );
 }
 

@@ -38,11 +38,12 @@ const styles = StyleSheet.create({
   },
 
   disabledButton: {
-    backgroundColor: colors.disabled,
+    backgroundColor: colors.primaryDark,
+    opacity: 0.8,
   },
 
   disabledText: {
-    color: colors.disabledText,
+    color: colors.textOnPrimary,
   },
 });
 
