@@ -180,6 +180,7 @@ function LoginScreen({ navigation }) {
               placeholder="03XXXXXXXXX"
               keyboardType="phone-pad"
               maxLength={11}
+                editable={!loading}
             />
 
             {errors.mobileNumber ? (
@@ -192,6 +193,7 @@ function LoginScreen({ navigation }) {
               onChangeText={handlePasswordChange}
               placeholder="Enter your password"
               isPassword
+                editable={!loading}
             />
 
             {errors.password ? (
@@ -220,6 +222,7 @@ function LoginScreen({ navigation }) {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => navigation.navigate('Signup')}
+                 disabled={loading}
               >
                 <Text style={styles.signupLink}>Sign Up</Text>
               </TouchableOpacity>
@@ -238,6 +241,7 @@ function LoginScreen({ navigation }) {
                 activeOpacity={0.8}
                 style={styles.demoButton}
                 onPress={() => handleDemoLogin('user')}
+                 disabled={loading}
               >
                 <Text style={styles.demoButtonText}>User</Text>
               </TouchableOpacity>
@@ -246,6 +250,7 @@ function LoginScreen({ navigation }) {
                 activeOpacity={0.8}
                 style={styles.demoButton}
                 onPress={() => handleDemoLogin('admin')}
+                 disabled={loading}
               >
                 <Text style={styles.demoButtonText}>Admin</Text>
               </TouchableOpacity>
