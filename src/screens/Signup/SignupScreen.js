@@ -642,6 +642,7 @@ function SignupScreen({ navigation }) {
                 onChangeText={handleFullNameChange}
                 placeholder="Enter your full name"
                 autoCapitalize="words"
+                editable={!loading}
               />
 
               {errors.fullName ? (
@@ -655,6 +656,7 @@ function SignupScreen({ navigation }) {
                 placeholder="Enter your email address"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                editable={!loading}
               />
 
               {errors.email ? (
@@ -668,6 +670,7 @@ function SignupScreen({ navigation }) {
                 placeholder="03XXXXXXXXX"
                 keyboardType="phone-pad"
                 maxLength={11}
+                editable={!loading}
               />
 
               {errors.mobileNumber ? (
@@ -680,6 +683,7 @@ function SignupScreen({ navigation }) {
                 onChangeText={handlePasswordChange}
                 placeholder="Create a password"
                 isPassword
+                editable={!loading}
               />
 
               {errors.password ? (
@@ -692,6 +696,7 @@ function SignupScreen({ navigation }) {
                 onChangeText={handleConfirmPasswordChange}
                 placeholder="Confirm your password"
                 isPassword
+                editable={!loading}
               />
 
               {errors.confirmPassword ? (
