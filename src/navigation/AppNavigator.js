@@ -46,6 +46,8 @@ import DailyCoverageScreen from '@/screens/DailyCoverage/DailyCoverageScreen';
 import IndentScreen from '@/screens/Indent/IndentScreen';
 import DiscardVaccineScreen from '@/screens/DiscardVaccine/DiscardVaccineScreen';
 import MonthlyIndentListScreen from '@/screens/Indent/MonthlyIndentListScreen';
+import ForgotPasswordScreen from '@/screens/auth/ForgotPasswordScreen';
+import ResetPasswordScreen from '@/screens/auth/ResetPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -62,16 +64,41 @@ function AppNavigator() {
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
+          options={{
+            headerShown: false,
+          }}
         />
 
         <Stack.Screen
           name="Login"
           component={LoginScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="ForgotPassword"
+          component={ForgotPasswordScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="ResetPassword"
+          component={ResetPasswordScreen}
+          options={{
+            headerShown: false,
+          }}
         />
 
         <Stack.Screen
           name="Signup"
           component={SignupScreen}
+          options={{
+            headerShown: false,
+          }}
         />
 
         {/* User Routes */}
@@ -90,9 +117,9 @@ function AppNavigator() {
           component={IndentScreen}
         />
         <Stack.Screen
-  name="MonthlyIndentList"
-  component={MonthlyIndentListScreen}
-/>
+          name="MonthlyIndentList"
+          component={MonthlyIndentListScreen}
+        />
 
         <Stack.Screen
           name="DiscardVaccine"

@@ -17,8 +17,8 @@ const DEMO_CREDENTIALS = {
   },
 
   admin: {
-    mobileNumber: '03007654321',
-    password: 'Admin@123',
+    mobileNumber: '03452246469',
+    password: '12345678',
     role: 'admin',
   },
 };
@@ -152,9 +152,10 @@ function LoginScreen({ navigation }) {
     });
   };
 
+
   const handleForgotPassword = () => {
-    // Forgot Password screen/navigation yahan add karenge.
-  };
+  navigation.navigate('ForgotPassword');
+};
 
   return (
     <KeyboardScreen>
